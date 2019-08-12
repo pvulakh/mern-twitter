@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const User = require('../../models/User');
 const passport = require('passport');
-//"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkNTBhN2M3YjFhZmVmNzM3MzQxODE5ZSIsImlhdCI6MTU2NTU3MDQ4OCwiZXhwIjoxNTY1NTc0MDg4fQ.RFvbs4A0Tu5fhGAkU4rIUgrcYN8S4lflGuvEyDztHxc"
+
 router.get("/test", (req, res) => res.json({ msg: "users route testing!"}));
 
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
