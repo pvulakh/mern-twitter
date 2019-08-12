@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 
 router.get("/test", (req, res) => res.json({ msg: "users route testing!"}));
@@ -30,6 +31,24 @@ router.post("/register", (req, res) => {
         })
       }
     })
+})
+
+router.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email }).then(user => {
+    if (!user) {
+      return res.status(404).json({ email: 'no registered user with this email!'});
+    }
+
+    bcrypt.compare(password, user.password).then(match => {
+      if (match) {
+        res.json({ msg: 'success!'});
+      } else {
+        return res.status(400).json({ password: 'incorrect password!'});
+      }
+    })
+  })
 })
 
 module.exports = router;
