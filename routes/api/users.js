@@ -16,7 +16,7 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
     handle: req.user.handle,
     email: req.user.email
   });
-})
+});
 
 router.post("/register", (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
@@ -35,7 +35,7 @@ router.post("/register", (req, res) => {
           handle: req.body.handle,
           email: req.body.email,
           password: req.body.password
-        })
+        });
 
         // create encrypted password before saving user to db
         bcrypt.genSalt(10, (err, salt) => {
@@ -43,13 +43,31 @@ router.post("/register", (req, res) => {
             if (err) throw err;
             newUser.password = hash;
             newUser.save()
-              .then(user => res.json(user))
+              .then(user => {
+                const payload = { id: user.id, name: user.name };
+                jwt.sign(
+                  payload, 
+                  keys.secretOrKey, 
+                  { expiresIn: 3600},
+                  // res.json({
+                  //   success: true,
+                  //   token: 'Bearer ' + token 
+                  // })
+                  (err, token) => {
+                    // console.log(token);
+                    res.json({
+                      success: true,
+                      token: 'Bearer ' + token
+                    });
+                  }
+                );
+              })
               .catch(err => console.log(err));
-          })
-        })
+          });
+        });
       }
-    })
-})
+    });
+});
 
 router.post('/login', (req, res) => {
   const { errors, isValid } = validateLoginInput(req.body);
@@ -83,8 +101,8 @@ router.post('/login', (req, res) => {
       } else {
         return res.status(400).json({ password: 'incorrect password!'});
       }
-    })
-  })
-})
+    });
+  });
+});
 
 module.exports = router;
